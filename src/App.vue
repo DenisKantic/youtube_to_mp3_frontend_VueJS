@@ -2,19 +2,21 @@
 
 <template>
   <v-container>
-    <v-card style="width: 50%; margin: auto">
+    <v-card :loading="isDataLoading" style="width: 50%; margin: auto">
       <h1 class="text-center text-h5 py-5">
         <v-icon class="mr-2" size="30">mdi-music</v-icon>Download youtube video to mp3
       </h1>
       <v-text-field class="px-10" label="Paste link here" color="primary"></v-text-field>
       <v-divider thickness="3" color="primary"></v-divider>
-      <v-card-actions class="mx-auto">
+      <v-card-actions class="d-flex items-center justify-center">
         <v-btn color="primary" variant="flat">Download</v-btn>
-        <v-btn color="warning" variant="outlined">Refresh</v-btn>
+        <v-btn color="warning" @click="refresh_window" variant="outlined">Refresh</v-btn>
       </v-card-actions>
       <v-divider thickness="3" color="primary"></v-divider>
 
       <v-card-subtitle class="text-center text-h5 py-5">Downloaded songs</v-card-subtitle>
+     
+     
       <v-infinite-scroll height="45vh" :items="items" :onLoad="load">
         <template v-for="(item, index) in items" :key="item">
           <div :class="['pa-2 text-h6', index % 2 === 0 ? 'bg-grey-lighten-2' : '']">
@@ -27,9 +29,13 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 
 const items = ref(Array.from({ length: 30 }, (k, v) => v + 1))
+const isDataLoaded = ref(false);
+function refresh_window(){
+  window.location.reload()
+}
 
 async function api() {
   return new Promise((resolve) => {
@@ -45,7 +51,15 @@ async function load({ done }) {
   items.value.push(...res)
 
   done('ok')
+
 }
+
+onMounted(() => {
+  setTimeout(() => {
+    isDataLoaded.value = true;
+  }, 2000);
+  isDataLoaded.value = false;
+});
 </script>
 
 <style scoped>
